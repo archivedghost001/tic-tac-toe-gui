@@ -1,4 +1,4 @@
-# COLOR RECOGNIZTION
+# Tic Tac Toe Game
 
 Just a simple tic tac toe game (no it's not, it contains more or less 200 codes im going insane) with GUI.
 
