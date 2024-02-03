@@ -22,7 +22,9 @@ class TicTacToe:
         self.running = True
         self.table = []
         for col in range(3):
-            self.table[col].append("-")
+            self.table.append([])
+            for row in range(3):
+                self.table[col].append("-")
 
         self.background_color = (255, 174, 66)
         self.table_color = (50, 50, 50)
@@ -48,19 +50,22 @@ class TicTacToe:
             screen,
             self.table_color,
             [cell_space_point[0], tb_space_point[0]],
-            [cell_space_point[0], tb_space_point[1]]
+            [cell_space_point[0], tb_space_point[1]],
+            8,
         )
         r2 = pygame.draw.line(
             screen,
             self.table_color,
-            [cell_space_point[0], tb_space_point[1]],
-            [cell_space_point[1], tb_space_point[1]]
+            [tb_space_point[0], cell_space_point[1]],
+            [tb_space_point[1], cell_space_point[1]],
+            8,
         )
         c2 = pygame.draw.line(
             screen,
             self.table_color,
             [cell_space_point[1], tb_space_point[0]],
-            [cell_space_point[1], tb_space_point[1]]
+            [cell_space_point[1], tb_space_point[1]],
+            8,
         )
     # untuk memproses pergantian pemain
 
@@ -70,7 +75,7 @@ class TicTacToe:
     # memproses klik untuk memindahkan
     def move(self, pos):
         try:
-            x, y = [pos] // self.cell_size, pos[1] // self.cell_size
+            x, y = pos[0] // self.cell_size, pos[1] // self.cell_size
             if self.table[x][y] == "-":
                 self.table[x][y] = self.player
                 self.draw_char(x, y, self.player)
@@ -84,7 +89,7 @@ class TicTacToe:
         if self.player == "O":
             img = pygame.image.load("assets/cricl.png")
         elif self.player == "X":
-            img = pygame.image.load("assets/[LOUD INCORRECT BUZZER].png")
+            img = pygame.image.load("assets/X.png")
         img = pygame.transform.scale(img, (self.cell_size, self.cell_size))
         screen.blit(
             img,
@@ -159,7 +164,7 @@ class TicTacToe:
                 win = False
                 break
         if win == True:
-            self.pattern_strike((2, 0), (0, 2), "tight-diag")
+            self.pattern_strike((2, 0), (0, 2), "right-diag")
             self.winner = self.player
             self.taking_move = False
 
@@ -197,3 +202,39 @@ class TicTacToe:
                 self.table_size - self.table_space,
                 end_point[-1] * self.cell_size + mid_val,
             )
+        # garis untuk pola kemenangan diagonal
+        elif line_type == "left-diag":
+            start_x, start_y = self.table_space, self.table_space
+            end_x, end_y = (
+                self.table_size - self.table_space,
+                self.table_size - self.table_space,
+            )
+        elif line_type == "right-diag":
+            start_x, start_y = self.table_size - self.table_space, self.table_space
+            end_x, end_y = self.table_space, self.table_size - self.table_space
+
+        # Variable untuk menggambar garisnya
+        line_strike = pygame.draw.line(
+            screen, self.line_color, [start_x, start_y], [end_x, end_y], 8
+        )
+
+    # membuat fungsi main
+    def main(self):
+        screen.fill(self.background_color)
+        self.draw_table()
+        while self.running:
+            self.message()
+            for self.event in pygame.event.get():
+                if self.event.type == pygame.QUIT:
+                    self.running = False
+                if self.event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.taking_move:
+                        self.move(self.event.pos)
+            pygame.display.flip()
+            self.FPS.tick(60)
+
+
+# untuk implementasi dari sebuah permainan TicTacToe
+if __name__ == "__main__":
+    g = TicTacToe(window_size[0])
+    g.main()
